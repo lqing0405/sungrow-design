@@ -6752,12 +6752,50 @@
             color: #1a1a1a;
             margin: 0;
         }
+
+        /* ── Tabs 修复：重置 button 默认样式 ── */
+        .tabs-line-plain {
+            display: flex;
+            border-bottom: 1px solid #EBEEF5;
+            gap: 32px;
+        }
+        .tabs-line-plain .tab-item {
+            display: inline-flex;
+            align-items: center;
+            height: 32px;
+            padding: 12px 0;
+            font-size: 14px;
+            color: #666;
+            cursor: pointer;
+            background: none;
+            border: none;
+            border-bottom: 2px solid transparent;
+            margin-bottom: -1px;
+            transition: color 0.2s;
+            user-select: none;
+            gap: 6px;
+            white-space: nowrap;
+            position: relative;
+            outline: none;
+            font-family: inherit;
+        }
+        .tabs-line-plain .tab-item:hover {
+            color: #FF7900;
+        }
+        .tabs-line-plain .tab-item.active {
+            color: #FF7900;
+            font-weight: 500;
+            border-bottom-color: #FF7900;
+        }
+
         .tab-content {
             display: none;
         }
         .tab-content.active {
             display: block;
         }
+
+        /* ── 筛选栏 ── */
         .filter-bar {
             display: flex;
             gap: 12px;
@@ -6778,44 +6816,181 @@
         .filter-select {
             height: 32px;
             padding: 0 10px;
-            border: 1px solid var(--input-border);
-            border-radius: var(--input-radius);
+            border: 1px solid #D7DAE0;
+            border-radius: 4px;
             font-size: 14px;
-            color: var(--input-text);
+            color: #333;
             background: #fff;
             min-width: 120px;
             outline: none;
             cursor: pointer;
+            font-family: inherit;
+            -webkit-appearance: none;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg width='10' height='6' viewBox='0 0 10 6' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%239D9D9D' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 10px center;
+            padding-right: 28px;
         }
         .filter-select:focus {
-            border-color: var(--input-focus-border);
+            border-color: #FF7900;
         }
         .filter-input {
             height: 32px;
             padding: 0 10px;
-            border: 1px solid var(--input-border);
-            border-radius: var(--input-radius);
+            border: 1px solid #D7DAE0;
+            border-radius: 4px;
             font-size: 14px;
-            color: var(--input-text);
+            color: #333;
             width: 200px;
             outline: none;
+            background: #fff;
+            font-family: inherit;
         }
         .filter-input:focus {
-            border-color: var(--input-focus-border);
+            border-color: #FF7900;
         }
         .filter-input::placeholder {
-            color: var(--input-placeholder);
+            color: #C0C0C0;
         }
+
+        /* ── 表格 ── */
         .table-wrapper {
             background: #fff;
             border-radius: 8px;
             overflow: hidden;
         }
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+        }
+        .table thead th {
+            background: #F5F7FA;
+            color: #333;
+            font-weight: 600;
+            text-align: left;
+            height: 32px;
+            padding: 0 16px;
+            border-bottom: 1px solid #D7DAE0;
+        }
+        .table tbody td {
+            height: 40px;
+            padding: 0 16px;
+            border-bottom: 1px solid rgba(215, 218, 224, 0.6);
+            color: #666;
+        }
+        .table tbody tr:hover {
+            background: #FFFAF5;
+        }
+
+        /* ── 按钮 ── */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 4px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-family: inherit;
+            outline: none;
+        }
+        .btn-sm {
+            height: 28px;
+            padding: 0 12px;
+        }
+        .btn-primary {
+            background: #FF7900;
+            border: 1px solid #FF7900;
+            color: #fff;
+        }
+        .btn-primary:hover {
+            background: #FFC266;
+            border-color: #FFC266;
+        }
+        .btn-default {
+            background: #fff;
+            border: 1px solid #D7DAE0;
+            color: #666;
+        }
+        .btn-default:hover {
+            border-color: #FF7900;
+            color: #FF7900;
+        }
+
+        /* ── 分页 ── */
         .pagination-wrapper {
             display: flex;
             justify-content: flex-end;
             margin-top: 16px;
             padding: 12px 0;
+        }
+        .pagination {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .pagination-total {
+            font-size: 14px;
+            color: #666;
+            margin-right: 8px;
+        }
+        .pagination-item {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 28px;
+            height: 28px;
+            padding: 0 6px;
+            border-radius: 4px;
+            font-size: 14px;
+            color: #333;
+            cursor: pointer;
+            border: 1px solid #D7DAE0;
+            background: #fff;
+        }
+        .pagination-item:hover:not(.disabled) {
+            border-color: #FF7900;
+            color: #FF7900;
+        }
+        .pagination-item.active {
+            background: #FF7900;
+            border-color: #FF7900;
+            color: #fff;
+        }
+        .pagination-item.disabled {
+            color: #ccc;
+            cursor: not-allowed;
+        }
+
+        /* ── 标签 ── */
+        .tag {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+        }
+        .tag-danger { background: #FFF1F0; color: #ff4d4f; }
+        .tag-warning { background: #FFF7E6; color: #FF7900; }
+        .tag-success { background: #F6FFED; color: #52c41a; }
+        .tag-info { background: #F0F5FF; color: #1890ff; }
+        .tag-default { background: #F5F5F5; color: #666; }
+
+        /* ── 操作链接 ── */
+        .action-cell {
+            white-space: nowrap;
+        }
+        .action-link {
+            color: #FF7900;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        .action-link:hover {
+            color: #FFC266;
+        }
+        .action-link + .action-link {
+            margin-left: 12px;
         }
     </style>
 </head>
