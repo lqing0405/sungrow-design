@@ -6732,7 +6732,7 @@
             margin: 0;
             padding: 0;
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-            background: #f5f7fa;
+            background: transparent;
         }
         .page-container {
             padding: 16px;
@@ -6752,30 +6752,6 @@
             color: #1a1a1a;
             margin: 0;
         }
-        .main-tabs {
-            display: flex;
-            gap: 8px;
-            margin-bottom: 16px;
-        }
-        .main-tab {
-            padding: 8px 16px;
-            border: 1px solid #d9d9d9;
-            border-radius: 4px;
-            background: #fff;
-            cursor: pointer;
-            font-size: 14px;
-            color: #666;
-            transition: all 0.2s;
-        }
-        .main-tab:hover {
-            color: #FF7900;
-            border-color: #FF7900;
-        }
-        .main-tab.active {
-            background: #FF7900;
-            color: #fff;
-            border-color: #FF7900;
-        }
         .tab-content {
             display: none;
         }
@@ -6787,6 +6763,7 @@
             gap: 12px;
             margin-bottom: 16px;
             align-items: center;
+            flex-wrap: wrap;
         }
         .filter-item {
             display: flex;
@@ -6796,40 +6773,38 @@
         .filter-label {
             font-size: 14px;
             color: #666;
+            white-space: nowrap;
         }
         .filter-select {
-            padding: 6px 12px;
-            border: 1px solid #d9d9d9;
-            border-radius: 4px;
+            height: 32px;
+            padding: 0 10px;
+            border: 1px solid var(--input-border);
+            border-radius: var(--input-radius);
             font-size: 14px;
+            color: var(--input-text);
+            background: #fff;
             min-width: 120px;
+            outline: none;
+            cursor: pointer;
+        }
+        .filter-select:focus {
+            border-color: var(--input-focus-border);
         }
         .filter-input {
-            padding: 6px 12px;
-            border: 1px solid #d9d9d9;
-            border-radius: 4px;
+            height: 32px;
+            padding: 0 10px;
+            border: 1px solid var(--input-border);
+            border-radius: var(--input-radius);
             font-size: 14px;
+            color: var(--input-text);
             width: 200px;
+            outline: none;
         }
-        .filter-btn {
-            padding: 6px 16px;
-            border: 1px solid #d9d9d9;
-            border-radius: 4px;
-            background: #fff;
-            cursor: pointer;
-            font-size: 14px;
+        .filter-input:focus {
+            border-color: var(--input-focus-border);
         }
-        .filter-btn:hover {
-            border-color: #FF7900;
-            color: #FF7900;
-        }
-        .filter-btn.primary {
-            background: #FF7900;
-            color: #fff;
-            border-color: #FF7900;
-        }
-        .filter-btn.primary:hover {
-            background: #e66e00;
+        .filter-input::placeholder {
+            color: var(--input-placeholder);
         }
         .table-wrapper {
             background: #fff;
@@ -6850,10 +6825,10 @@
             <h1 class="page-title">我的任务</h1>
         </div>
 
-        <div class="main-tabs">
-            <button class="main-tab active" onclick="switchMainTab('all', this)">全部任务</button>
-            <button class="main-tab" onclick="switchMainTab('todo', this)">待办任务</button>
-            <button class="main-tab" onclick="switchMainTab('done', this)">已完成</button>
+        <div class="tabs-line-plain">
+            <button class="tab-item active" onclick="switchMainTab('all', this)">全部任务</button>
+            <button class="tab-item" onclick="switchMainTab('todo', this)">待办任务</button>
+            <button class="tab-item" onclick="switchMainTab('done', this)">已完成</button>
         </div>
 
         <!-- 全部任务 -->
@@ -6880,8 +6855,8 @@
                 <div class="filter-item">
                     <input type="text" class="filter-input" placeholder="搜索任务名称...">
                 </div>
-                <button class="filter-btn primary">查询</button>
-                <button class="filter-btn">重置</button>
+                <button class="btn btn-primary btn-sm">查询</button>
+                <button class="btn btn-default btn-sm">重置</button>
             </div>
             <div class="table-wrapper">
                 <table class="table">
@@ -6994,8 +6969,8 @@
                 <div class="filter-item">
                     <input type="text" class="filter-input" placeholder="搜索任务名称...">
                 </div>
-                <button class="filter-btn primary">查询</button>
-                <button class="filter-btn">重置</button>
+                <button class="btn btn-primary btn-sm">查询</button>
+                <button class="btn btn-default btn-sm">重置</button>
             </div>
             <div class="table-wrapper">
                 <table class="table">
@@ -7096,8 +7071,8 @@
                 <div class="filter-item">
                     <input type="text" class="filter-input" placeholder="搜索任务名称...">
                 </div>
-                <button class="filter-btn primary">查询</button>
-                <button class="filter-btn">重置</button>
+                <button class="btn btn-primary btn-sm">查询</button>
+                <button class="btn btn-default btn-sm">重置</button>
             </div>
             <div class="table-wrapper">
                 <table class="table">
@@ -7141,7 +7116,7 @@
 
     <script>
         function switchMainTab(tabName, el) {
-            document.querySelectorAll('.main-tab').forEach(function(btn) { btn.classList.remove('active'); });
+            document.querySelectorAll('.tab-item').forEach(function(btn) { btn.classList.remove('active'); });
             el.classList.add('active');
             document.querySelectorAll('.tab-content').forEach(function(content) { content.classList.remove('active'); });
             document.getElementById('tab-' + tabName).classList.add('active');
