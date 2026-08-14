@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>消息中心</title>
+    <link rel="stylesheet" href="components.css">
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: #f5f7fa;
+        }
+        .page-container {
+            padding: 16px;
+            min-height: 100vh;
+            box-sizing: border-box;
+        }
+        .page-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 48px;
+            margin-bottom: 16px;
+        }
+        .page-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #1a1a1a;
+            margin: 0;
+        }
+        .header-actions {
+            display: flex;
+            gap: 8px;
+        }
+        .action-btn {
+            padding: 6px 12px;
+            border: 1px solid #d9d9d9;
+            border-radius: 4px;
+            background: #fff;
+            cursor: pointer;
+            font-size: 14px;
+            color: #666;
+            transition: all 0.2s;
+        }
+        .action-btn:hover {
+            border-color: #FF7900;
+            color: #FF7900;
+        }
+        .main-tabs {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 16px;
+        }
+        .main-tab {
+            padding: 8px 16px;
+            border: 1px solid #d9d9d9;
+            border-radius: 4px;
+            background: #fff;
+            cursor: pointer;
+            font-size: 14px;
+            color: #666;
+            transition: all 0.2s;
+        }
+        .main-tab:hover {
+            color: #FF7900;
+            border-color: #FF7900;
+        }
+        .main-tab.active {
+            background: #FF7900;
+            color: #fff;
+            border-color: #FF7900;
+        }
+        .tab-content {
+            display: none;
+        }
+        .tab-content.active {
+            display: block;
+        }
+        .filter-bar {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 16px;
+            align-items: center;
+        }
+        .filter-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .filter-label {
+            font-size: 14px;
+            color: #666;
+        }
+        .filter-select {
+            padding: 6px 12px;
+            border: 1px solid #d9d9d9;
+            border-radius: 4px;
+            font-size: 14px;
+            min-width: 120px;
+        }
+        .filter-input {
+            padding: 6px 12px;
+            border: 1px solid #d9d9d9;
+            border-radius: 4px;
+            font-size: 14px;
+            width: 200px;
+        }
+        .filter-btn {
+            padding: 6px 16px;
+            border: 1px solid #d9d9d9;
+            border-radius: 4px;
+            background: #fff;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        .filter-btn:hover {
+            border-color: #FF7900;
+            color: #FF7900;
+        }
+        .filter-btn.primary {
+            background: #FF7900;
+            color: #fff;
+            border-color: #FF7900;
+        }
+        .filter-btn.primary:hover {
+            background: #e66e00;
+        }
+        .table-wrapper {
+            background: #fff;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        .pagination-wrapper {
+            display: flex;
+            justify-content: flex-end;
+            margin-top: 16px;
+            padding: 12px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="page-container">
+        <div class="page-header">
+            <h1 class="page-title">消息中心</h1>
+            <div class="header-actions">
+                <button class="action-btn" onclick="removeSelectedMsgs()">移除</button>
+                <button class="action-btn" onclick="refreshMsgList()">刷新</button>
+            </div>
+        </div>
+
+        <div class="main-tabs">
+            <button class="main-tab active" onclick="switchMsgTab('system', this)">系统消息</button>
+            <button class="main-tab" onclick="switchMsgTab('task', this)">任务通知</button>
+            <button class="main-tab" onclick="switchMsgTab('review', this)">评审提醒</button>
+        </div>
+
+        <!-- 系统消息 -->
+        <div id="tab-msg-system" class="tab-content active">
+            <div class="filter-bar">
+                <div class="filter-item">
+                    <span class="filter-label">消息类型：</span>
+                    <select class="filter-select">
+                        <option>全部</option>
+                        <option>系统通知</option>
+                        <option>版本更新</option>
+                        <option>维护公告</option>
+                    </select>
+                </div>
+                <div class="filter-item">
+                    <span class="filter-label">时间范围：</span>
+                    <input type="date" class="filter-input">
+                    <span>-</span>
+                    <input type="date" class="filter-input">
+                </div>
+                <button class="filter-btn primary">查询</button>
+                <button class="filter-btn">重置</button>
+            </div>
+            <div class="table-wrapper">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th style="width:40px;"><input type="checkbox" onchange="toggleMsgSelectAll(this)"></th>
+                            <th style="width:50px;">序号</th>
+                            <th>消息标题</th>
+                            <th style="width:120px;">消息类型</th>
+                            <th style="width:100px;">状态</th>
+                            <th style="width:150px;">发送时间</th>
+                            <th style="width:100px;">操作</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><input type="checkbox"></td>
+                            <td>1</td>
+                            <td>系统将于今晚 22:00-23:00 进行维护升级</td>
+                            <td>维护公告</td>
+                            <td><span class="tag tag-warning">未读</span></td>
+                            <td>2024-01-15 09:00</td>
+                            <td class="action-cell">
+                                <span class="action-link">查看</span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><input type="checkbox"></td>
+                            <td>2</td>
+                            <td>设计系统 V2.0 版本已发布，请查看更新内容</td>
+                            <td>版本更新</td>
+                            <td><span class="tag tag-warning">未读</span></td>
+                            <td>2024-01-14 15:30</td>
+                            <td class="action-cell">
+                                <span class="action-link">查看</span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><input type="checkbox"></td>
+                            <td>3</td>
+                            <td>新增组件库规范文档，请及时查阅</td>
+                            <td>系统通知</td>
+                            <td><span class="tag tag-success">已读</span></td>
+                            <td>2024-01-13 10:20</td>
+                            <td class="action-cell">
+                                <span class="action-link">查看</span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><input type="checkbox"></td>
+                            <td>4</td>
+                            <td>账号安全提醒：检测到异地登录</td>
+                            <td>系统通知</td>
+                            <td><span class="tag tag-success">已读</span></td>
+                            <td>2024-01-12 08:45</td>
+                            <td class="action-cell">
+                                <span class="action-link">查看</span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><input type="checkbox"></td>
+                            <td>5</td>
+                            <td>系统性能优化完成，访问速度提升 30%</td>
+                            <td>系统通知</td>
+                            <td><span class="tag tag-success">已读</span></td>
+                            <td>2024-01-11 14:00</td>
+                            <td class="action-cell">
+                                <span class="action-link">查看</span>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="pagination-wrapper">
+                <div class="pagination">
+                    <span class="pagination-total">共 5 条</span>
+                    <span class="pagination-item disabled">‹</span>
+                    <span class="pagination-item active">1</span>
+                    <span class="pagination-item disabled">›</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- 任务通知 -->
+        <div id="tab-msg-task" class="tab-content">
+            <div class="filter-bar">
+                <div class="filter-item">
+                    <span class="filter-label">任务类型：</span>
+                    <select class="filter-select">
+                        <option>全部</option>
+                        <option>设计评审</option>
+                        <option>需求评审</option>
+                        <option>开发任务</option>
+                    </select>
+                </div>
+                <div class="filter-item">
+                    <span class="filter-label">时间范围：</span>
+                    <input type="date" class="filter-input">
+                    <span>-</span>
+                    <input type="date" class="filter-input">
+                </div>
+                <button class="filter-btn primary">查询</button>
+                <button class="filter-btn">重置</button>
+            </div>
+            <div class="table-wrapper">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th style="width:40px;"><input type="checkbox" onchange="toggleMsgSelectAll(this)"></th>
+                            <th style="width:50px;">序号</th>
+                            <th>消息标题</th>
+                            <th style="width:120px;">任务类型</th>
+                            <th style="width:100px;">状态</th>
+                            <th style="width:150px;">发送时间</th>
+                            <th style="width:100px;">操作</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><input type="checkbox"></td>
+                            <td>1</td>
+                            <td>您有一个新的设计评审任务待处理</td>
+                            <td>设计评审</td>
+                            <td><span class="tag tag-warning">未读</span></td>
+                            <td>2024-01-15 11:00</td>
+                            <td class="action-cell">
+                                <span class="action-link">查看</span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><input type="checkbox"></td>
+                            <td>2</td>
+                            <td>需求评审会议将于明天 14:00 召开</td>
+                            <td>需求评审</td>
+                            <td><span class="tag tag-warning">未读</span></td>
+                            <td>2024-01-14 16:30</td>
+                            <td class="action-cell">
+                                <span class="action-link">查看</span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><input type="checkbox"></td>
+                            <td>3</td>
+                            <td>开发任务「权限管理模块」已分配给您</td>
+                            <td>开发任务</td>
+                            <td><span class="tag tag-success">已读</span></td>
+                            <td>2024-01-13 09:45</td>
+                            <td class="action-cell">
+                                <span class="action-link">查看</span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><input type="checkbox"></td>
+                            <td>4</td>
+                            <td>设计评审已通过，请查看评审意见</td>
+                            <td>设计评审</td>
+                            <td><span class="tag tag-success">已读</span></td>
+                            <td>2024-01-12 15:20</td>
+                            <td class="action-cell">
+                                <span class="action-link">查看</span>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="pagination-wrapper">
+                <div class="pagination">
+                    <span class="pagination-total">共 4 条</span>
+                    <span class="pagination-item disabled">‹</span>
+                    <span class="pagination-item active">1</span>
+                    <span class="pagination-item disabled">›</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- 评审提醒 -->
+        <div id="tab-msg-review" class="tab-content">
+            <div class="filter-bar">
+                <div class="filter-item">
+                    <span class="filter-label">评审类型：</span>
+                    <select class="filter-select">
+                        <option>全部</option>
+                        <option>设计评审</option>
+                        <option>需求评审</option>
+                        <option>代码评审</option>
+                    </select>
+                </div>
+                <div class="filter-item">
+                    <span class="filter-label">时间范围：</span>
+                    <input type="date" class="filter-input">
+                    <span>-</span>
+                    <input type="date" class="filter-input">
+                </div>
+                <button class="filter-btn primary">查询</button>
+                <button class="filter-btn">重置</button>
+            </div>
+            <div class="table-wrapper">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th style="width:40px;"><input type="checkbox" onchange="toggleMsgSelectAll(this)"></th>
+                            <th style="width:50px;">序号</th>
+                            <th>消息标题</th>
+                            <th style="width:120px;">评审类型</th>
+                            <th style="width:100px;">状态</th>
+                            <th style="width:150px;">发送时间</th>
+                            <th style="width:100px;">操作</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><input type="checkbox"></td>
+                            <td>1</td>
+                            <td>设计评审邀请：用户中心页面改版方案</td>
+                            <td>设计评审</td>
+                            <td><span class="tag tag-warning">未读</span></td>
+                            <td>2024-01-15 10:00</td>
+                            <td class="action-cell">
+                                <span class="action-link">查看</span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><input type="checkbox"></td>
+                            <td>2</td>
+                            <td>需求评审已完成，请查看评审结果</td>
+                            <td>需求评审</td>
+                            <td><span class="tag tag-success">已读</span></td>
+                            <td>2024-01-14 11:30</td>
+                            <td class="action-cell">
+                                <span class="action-link">查看</span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><input type="checkbox"></td>
+                            <td>3</td>
+                            <td>代码评审提醒：请审核「权限管理」模块代码</td>
+                            <td>代码评审</td>
+                            <td><span class="tag tag-warning">未读</span></td>
+                            <td>2024-01-13 14:15</td>
+                            <td class="action-cell">
+                                <span class="action-link">查看</span>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="pagination-wrapper">
+                <div class="pagination">
+                    <span class="pagination-total">共 3 条</span>
+                    <span class="pagination-item disabled">‹</span>
+                    <span class="pagination-item active">1</span>
+                    <span class="pagination-item disabled">›</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function switchMsgTab(tabName, el) {
+            document.querySelectorAll('.main-tab').forEach(function(btn) { btn.classList.remove('active'); });
+            el.classList.add('active');
+            document.querySelectorAll('.tab-content').forEach(function(content) { content.classList.remove('active'); });
+            document.getElementById('tab-msg-' + tabName).classList.add('active');
+        }
+        function toggleMsgSelectAll(checkbox) {
+            var tbody = checkbox.closest('table').querySelector('tbody');
+            var checkboxes = tbody.querySelectorAll('input[type="checkbox"]');
+            checkboxes.forEach(function(cb) { cb.checked = checkbox.checked; });
+        }
+        function removeSelectedMsgs() {
+            var activeTab = document.querySelector('.tab-content.active');
+            var checked = activeTab.querySelectorAll('tbody input[type="checkbox"]:checked');
+            if (checked.length === 0) {
+                alert('请先勾选要移除的消息');
+                return;
+            }
+            checked.forEach(function(cb) {
+                cb.closest('tr').remove();
+            });
+            // 更新序号
+            var rows = activeTab.querySelectorAll('tbody tr');
+            rows.forEach(function(row, idx) {
+                row.cells[1].textContent = idx + 1;
+            });
+        }
+        function refreshMsgList() {
+            var activeTab = document.querySelector('.tab-content.active');
+            var checkboxes = activeTab.querySelectorAll('input[type="checkbox"]');
+            checkboxes.forEach(function(cb) { cb.checked = false; });
+            alert('消息列表已刷新');
+        }
+    </script>
+</body>
+</html>
